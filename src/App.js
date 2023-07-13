@@ -1,24 +1,29 @@
 import React, { useState } from "react";
 import "./App.css";
+import { evaluate } from "mathjs";
 
 const App = () => {
   const [resultValue, setResultValue] = useState("0");
 
   const addValueToResult = (value) => {
     if (value === "AC") {
-      setResultValue("");
+      setResultValue("0");
     } else if (value === "DEL") {
-      setResultValue(resultValue.slice(0, -1));
+      setResultValue(resultValue.length === 1 ? "0" : resultValue.slice(0, -1));
     } else if (value === "=") {
       calculateSum();
     } else {
-      setResultValue(resultValue + value);
+      handleInitialZero(value);
     }
+  };
+
+  const handleInitialZero = (value) => {
+    setResultValue(resultValue === "0" ? value : resultValue + value);
   };
 
   const calculateSum = () => {
     try {
-      const calculatedSum = new Function(`return ${resultValue}`)();
+      const calculatedSum = evaluate(resultValue);
       setResultValue(calculatedSum.toString());
     } catch (error) {
       setResultValue("Error");
@@ -27,6 +32,7 @@ const App = () => {
 
   return (
     <div className="wrapper">
+      <h1>Max' React JS Calculator</h1>
       <div className="calc-grid">
         <div className="result">{resultValue}</div>
         <div className="calc-buttons">
@@ -75,8 +81,8 @@ const App = () => {
           <button onClick={() => addValueToResult("-")} className="div15">
             -
           </button>
-          <button onClick={() => addValueToResult(".")} className="div16">
-            .
+          <button onClick={() => addValueToResult(",")} className="div16">
+            ,
           </button>
           <button onClick={() => addValueToResult("0")} className="div17">
             0
